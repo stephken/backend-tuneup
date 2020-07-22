@@ -5,11 +5,12 @@
 Use the timeit and cProfile libraries to find bad code.
 """
 
-__author__ = "???"
+__author__ = "Ken Stephens"
 
 import cProfile
 import pstats
 import functools
+import timeit
 
 
 def profile(func):
@@ -20,6 +21,24 @@ def profile(func):
     # You need to understand how they are constructed and used.
     raise NotImplementedError("Complete this decorator function")
 
+    @functools.wraps(func)
+    def profile_wrapper(*args, **kwargs):
+        performance_object = cProfile.Profile()
+        performance_object.enable()
+        result = func(*args, **kwargs)
+        performance_object.disable()
+
+        get_stats_obj = pstats.Stats(performance_object)\
+        .strip_dirs()\
+        .sort_stats('cumulative')\
+        .print_stats()
+        get_stats_obj = pstats.Stats(performance_object).strip_dirs().sort_stats('cumulative').print_stats()
+
+        return result
+
+    return profile_wrapper
+
+
 
 def read_movies(src):
     """Returns a list of movie titles."""
@@ -28,29 +47,26 @@ def read_movies(src):
         return f.read().splitlines()
 
 
-def is_duplicate(title, movies):
-    """Returns True if title is within movies list."""
-    for movie in movies:
-        if movie.lower() == title.lower():
-            return True
-    return False
-
-
+@profile
 def find_duplicate_movies(src):
     """Returns a list of duplicate movies from a src list."""
+    movie_list = {}
     movies = read_movies(src)
-    duplicates = []
-    while movies:
-        movie = movies.pop()
-        if is_duplicate(movie, movies):
-            duplicates.append(movie)
-    return duplicates
+    for movie in movies:
+        if movie_list.get(movie):
+            # if it's already there we need to increment it
+            movie_list[movie] += 1
+        else:
+            # if the movie is already there we need to add it
+            movie_list[movie] = 1
+    return [k for k, v in movie_list.items() if v > 1]
 
 
 def timeit_helper():
     """Part A: Obtain some profiling measurements using timeit."""
-    # YOUR CODE GOES HERE
-    pass
+    t = timeit.Timer(stmt="main()", setup="from __main__ import main")
+    results = min(t.repeat(repeat=7, number=5)) / 5
+    print("Best time across 7 repeats of 5 runs per repeat " + str(results) + " sec")
 
 
 def main():
@@ -60,5 +76,6 @@ def main():
     print('\n'.join(result))
 
 
-if __name__ == '__main__':
-    main()
+    if __name__ == '__main__':
+        main()
+
