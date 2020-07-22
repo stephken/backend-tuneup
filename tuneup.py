@@ -54,7 +54,7 @@ def find_duplicate_movies(src):
     movies = read_movies(src)
     for movie in movies:
         if movie_list.get(movie):
-            # if it's already there we need to increment it
+            # if it's already there we need to add to it
             movie_list[movie] += 1
         else:
             # if the movie is already there we need to add it
