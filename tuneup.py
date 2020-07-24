@@ -11,16 +11,10 @@ import cProfile
 import pstats
 import functools
 import timeit
-
-
 def profile(func):
     """A cProfile decorator function that can be used to
     measure performance.
     """
-    # Be sure to review the lesson material on decorators.
-    # You need to understand how they are constructed and used.
-    raise NotImplementedError("Complete this decorator function")
-
     @functools.wraps(func)
     def profile_wrapper(*args, **kwargs):
         performance_object = cProfile.Profile()
@@ -37,9 +31,6 @@ def profile(func):
         return result
 
     return profile_wrapper
-
-
-
 def read_movies(src):
     """Returns a list of movie titles."""
     print(f'Reading file: {src}')
@@ -54,20 +45,18 @@ def find_duplicate_movies(src):
     movies = read_movies(src)
     for movie in movies:
         if movie_list.get(movie):
-            # if it's already there we need to add to it
+            # if it's already there we need to increment it
             movie_list[movie] += 1
         else:
             # if the movie is already there we need to add it
             movie_list[movie] = 1
     return [k for k, v in movie_list.items() if v > 1]
 
-
 def timeit_helper():
     """Part A: Obtain some profiling measurements using timeit."""
     t = timeit.Timer(stmt="main()", setup="from __main__ import main")
     results = min(t.repeat(repeat=7, number=5)) / 5
     print("Best time across 7 repeats of 5 runs per repeat " + str(results) + " sec")
-
 
 def main():
     """Computes a list of duplicate movie entries."""
@@ -76,6 +65,5 @@ def main():
     print('\n'.join(result))
 
 
-    if __name__ == '__main__':
-        main()
-
+if __name__ == '__main__':
+    main()
